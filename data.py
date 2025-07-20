@@ -1,6 +1,5 @@
 headers = {
     "Content-Type": "application/json",
-    "Authorization": "Bearer jknnFApafP4awfAIFfafam2fma"
 }
 
 user_body = {

@@ -31,32 +31,58 @@ def positive_assert(first_name):
 def test_positive_new_user():
     positive_assert("Fernando")
 
-#TEST 1 Kit con 1 caracteres (Resultado 201)
+def positive_assert_kit(name_kit):
+    kit_body = {"name": name_kit}
+    response = sender_stand_request.create_new_kit(kit_body)
+
+    assert response.status_code == 201
+    assert response.json()["name"] == name_kit
+    print("Prueba positiva para parametro:", {name_kit})
+    print(response.status_code)
+    print(response.json())
+
+def negative_assert_kit(name_kit):
+    kit_body = {"name": name_kit}
+    response = sender_stand_request.create_new_kit(kit_body)
+
+    assert response.status_code == 400
+    assert response.json()["code"] == 400
+    assert response.json()["message"] == "No se han aprobado todos los parámetros requeridos"
+    print(response.status_code)
+    print(response.json())
+
+#TEST 1 Kit con 1 caracteres (Resultado 400 Esperado 201)
 def test_create_kit_1_letter_in_kit_body():
-    response = sender_stand_request.create_new_kit({"name": "a"})
-    print("Status code:", response.status_code)
-    print("Response JSON:", response.json())
+    positive_assert_kit("a")
 
-#TEST 2 Kit con 511 caracteres (Resultado 201)
+#TEST 2 Kit con 511 caracteres (Resultado 400 Esperado 201)
 def test_create_kit_511_letter_in_kit_body():
-    response = sender_stand_request.create_new_kit(TEST_2_511.value511)
-    print("Status code:", response.status_code)
-    print("Response JSON:", response.json())
+    positive_assert_kit(TEST_2_511.value511)
 
-#TEST 3 Kit con 0 caracteres, (Debe de dar 400 pero da 201)
+#TEST 3 Kit con 0 caracteres, (Resultado 400 Esperado 400)
 def test_create_kit_0_letter_in_kit_body():
-    response = sender_stand_request.create_new_kit({ "name": "" })
-    print("Status code:", response.status_code)
-    print("Response JSON:", response.json())
+    negative_assert_kit("")
 
-#TEST 4 Kit con 512 caracteres (Debe de dar 400 pero da 201)
+#TEST 4 Kit con 512 caracteres (Resultado 400 Esperado 400)
 def test_create_kit_512_letter_in_kit_body():
-    response = sender_stand_request.create_new_kit(TEST_4_512.value512)
-    print("Status code:", response.status_code)
-    print("Response JSON:", response.json())
+    negative_assert_kit(TEST_4_512.value512)
 
-#TEST 5 Kit con caracteres especiales (Resultado 201)
+#TEST 5 Kit con caracteres especiales (Resultado 400 Esperado 201)
 def test_create_kit_special_letter_in_kit_body():
-    response = sender_stand_request.create_new_kit({"name": "№%@,"})
-    print("Status code:", response.status_code)
-    print("Response JSON:", response.json())
+    positive_assert_kit("№%@,")
+
+#TEST 6 Kit con espacios (Resultado 400 Esperado 201)
+def test_create_kit_space_in_kit_body():
+    positive_assert_kit("A Aaa")
+
+#TEST 7 Kit con numeros en el nombre (Resultado 400 Esperado 201)
+def test_create_kit_numbers_in_kit_body():
+    positive_assert_kit("123")
+
+#TEST 8 Kit sin parametro en solicitud "kit_body = { }" (Resultado 400 Esperado 400)
+def test_create_kit_no_json_kit_body():
+    negative_assert_kit(None)
+
+#TEST 9 Kit con parametro diferente "kit_body = {"name": 123}" (Resultado 400 Esperado 400)
+def test_create_kit_dif_param_kit_body():
+    negative_assert_kit(123)
