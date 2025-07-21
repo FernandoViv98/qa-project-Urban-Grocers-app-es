@@ -36,6 +36,7 @@ def positive_assert_kit(name_kit):
     response = sender_stand_request.create_new_kit(kit_body)
 
     assert response.status_code == 201
+    assert response.json()["authToken"] != ""
     assert response.json()["name"] == name_kit
     print("Prueba positiva para parametro:", {name_kit})
     print(response.status_code)
